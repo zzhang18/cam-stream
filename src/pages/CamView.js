@@ -27,9 +27,8 @@ function CamView(props) {
             i18n.changeLanguage(t('targetLangCode'));
             // props.changeLocale();
           }}>{t('targetLang')}</Button> */}
-          <Button onClick={props.getServerInfo}>Get server info</Button>
           <Button onClick={props.getChannelsInfo}>Get channels info</Button>
-          <Button><a href='https://github.com/zzhang18/booking'>GitHub</a></Button>
+          <Button><a href='https://github.com/zzhang18/cam-stream'>GitHub</a></Button>
         </div>
         
       </div>
