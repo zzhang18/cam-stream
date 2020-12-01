@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/cam-stream/static/css/main.a841770b.chunk.css",
-    "main.js": "/cam-stream/static/js/main.c407d972.chunk.js",
-    "main.js.map": "/cam-stream/static/js/main.c407d972.chunk.js.map",
+    "main.js": "/cam-stream/static/js/main.c76d032b.chunk.js",
+    "main.js.map": "/cam-stream/static/js/main.c76d032b.chunk.js.map",
     "runtime-main.js": "/cam-stream/static/js/runtime-main.f20073fc.js",
     "runtime-main.js.map": "/cam-stream/static/js/runtime-main.f20073fc.js.map",
     "static/css/2.f3081fb4.chunk.css": "/cam-stream/static/css/2.f3081fb4.chunk.css",
@@ -21,6 +21,6 @@
     "static/css/2.f3081fb4.chunk.css",
     "static/js/2.bfd16238.chunk.js",
     "static/css/main.a841770b.chunk.css",
-    "static/js/main.c407d972.chunk.js"
+    "static/js/main.c76d032b.chunk.js"
   ]
 }

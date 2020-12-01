@@ -64,7 +64,7 @@ function CamView(props) {
           { title: 'SourceVideoWidth', dataIndex: 'SourceVideoWidth', key: 'SourceVideoWidth', width: 160 },
           { title: 'SourceVideoHeight', dataIndex: 'SourceVideoHeight', key: 'SourceVideoHeight', width: 160 },
           { title: 'Snapshot', dataIndex: 'SnapURL', key: 'SnapURL', width: 160,
-            render: (record) =><img src={'http://localhost:10800'+record} width="80px" height="80px" ></img>
+            render: (record) =><img src={props.endpoint + record} width="80px" height="80px" ></img>
           }
         ]}
       />
@@ -83,6 +83,7 @@ let hoc = (WrappedComponent) => {
         users: null,
         visible: false,
         title: 'Add user',
+        endpoint: 'http://172.16.17.253:10800',
         serverInfo: [],
         channels:[]
       };
@@ -95,14 +96,14 @@ let hoc = (WrappedComponent) => {
     }
 
     async getServerInfo(){
-      let result = await axios.get('http://localhost:10800/api/v1/getserverinfo');
+      let result = await axios.get(this.state.endpoint + '/api/v1/getserverinfo');
       // console.log('type',typeof(serverInfo));
       // console.log('result',serverInfo);
       this.setState({serverInfo:result.data});
     }
 
     async getChannelsInfo(){
-      let result = await axios.get('http://localhost:10800/api/v1/getchannels');
+      let result = await axios.get(this.state.endpoint + '/api/v1/getchannels');
       // console.log('type',typeof(serverInfo));
       // console.log('result',serverInfo);
       this.setState({channels:result.data.LiveQing.Body.Channels});
@@ -154,6 +155,7 @@ let hoc = (WrappedComponent) => {
         users={this.state.users}
         title={this.state.title}
         visible={this.state.visible}
+        endpoint={this.state.endpoint}
         serverInfo={this.state.serverInfo}
         channels={this.state.channels}
         cancel={() => this.cancel()}
