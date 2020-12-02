@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/cam-stream/static/css/main.a841770b.chunk.css",
+    "main.js": "/cam-stream/static/js/main.01fe1822.chunk.js",
+    "main.js.map": "/cam-stream/static/js/main.01fe1822.chunk.js.map",
+    "runtime-main.js": "/cam-stream/static/js/runtime-main.f20073fc.js",
+    "runtime-main.js.map": "/cam-stream/static/js/runtime-main.f20073fc.js.map",
+    "static/css/2.f3081fb4.chunk.css": "/cam-stream/static/css/2.f3081fb4.chunk.css",
+    "static/js/2.9746bb64.chunk.js": "/cam-stream/static/js/2.9746bb64.chunk.js",
+    "static/js/2.9746bb64.chunk.js.map": "/cam-stream/static/js/2.9746bb64.chunk.js.map",
+    "static/js/3.3d6c42d5.chunk.js": "/cam-stream/static/js/3.3d6c42d5.chunk.js",
+    "static/js/3.3d6c42d5.chunk.js.map": "/cam-stream/static/js/3.3d6c42d5.chunk.js.map",
+    "index.html": "/cam-stream/index.html",
+    "static/css/2.f3081fb4.chunk.css.map": "/cam-stream/static/css/2.f3081fb4.chunk.css.map",
+    "static/css/main.a841770b.chunk.css.map": "/cam-stream/static/css/main.a841770b.chunk.css.map",
+    "static/js/2.9746bb64.chunk.js.LICENSE.txt": "/cam-stream/static/js/2.9746bb64.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/cam-stream/static/media/logo.6ce24c58.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f20073fc.js",
+    "static/css/2.f3081fb4.chunk.css",
+    "static/js/2.9746bb64.chunk.js",
+    "static/css/main.a841770b.chunk.css",
+    "static/js/main.01fe1822.chunk.js"
+  ]
+}
