@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Table, Button, Modal, Divider, Popconfirm, Form, Input, message, Result, Popover } from 'antd';
+import { Table, Button, Modal, Divider, Popconfirm, Form, Input, message, Result, Popover, Select } from 'antd';
 import _ from 'lodash';
 // import { useTranslation, withTranslation } from 'react-i18next';
 import axios from 'axios';
 import ReactJson from 'react-json-view'
 // import { VLCPlayer, VlCPlayerView } from 'react-native-vlc-player';
 
+const { Option } = Select;
 const { Search } = Input;
 function CamView(props) {
-  
+
   return (
     <div style={{ padding: 40 }}>
       <div style={{ marginBottom: 20 }}>
@@ -31,7 +32,7 @@ function CamView(props) {
           {/* <Button onClick={props.getChannelsInfo}>Get channels info</Button>
           <Button><a href='https://github.com/zzhang18/cam-stream'>GitHub</a></Button> */}
         </div>
-        
+
       </div>
 
 
@@ -50,10 +51,10 @@ function CamView(props) {
         :
         <div></div>
       } */}
-        
-        {/* <ReactJson src={props.serverInfo} /> */}
-        {/* <h2 sytle={{float:'left'}}>Channel info</h2>   */}
-        {/* <ReactJson src={props.channels} /> */}
+
+      {/* <ReactJson src={props.serverInfo} /> */}
+      {/* <h2 sytle={{float:'left'}}>Channel info</h2>   */}
+      {/* <ReactJson src={props.channels} /> */}
       <h2 style={{ float: 'left' }}>Cam List</h2>
       <Table
         dataSource={props.channels}
@@ -65,20 +66,25 @@ function CamView(props) {
           { title: 'SourceVideoFrameRate', dataIndex: 'SourceVideoFrameRate', key: 'SourceVideoFrameRate', width: 160 },
           { title: 'SourceVideoWidth', dataIndex: 'SourceVideoWidth', key: 'SourceVideoWidth', width: 160 },
           { title: 'SourceVideoHeight', dataIndex: 'SourceVideoHeight', key: 'SourceVideoHeight', width: 160 },
-          { title: 'Snapshot', dataIndex: 'SnapURL', key: 'SnapURL', width: 160,
-            render: (record) =><img src={props.endpoint + record} width="80px" height="80px" ></img>
+          {
+            title: 'Snapshot', dataIndex: 'SnapURL', key: 'SnapURL', width: 160,
+            render: (record) => <img src={props.endpoint + record} width="80px" height="80px" ></img>
           },
-          { title: 'Recording', dataIndex: 'Recording', key: 'Recording', width: 160,
+          {
+            title: 'Recording', dataIndex: 'Recording', key: 'Recording', width: 160,
             render: (record) => record ? 'True' : 'False'
           },
           {
-            title: 'Record', key: 'action', width: 160,
-            render: (e,record) => {
-              console.log('record',record);
+            title: 'Record', key: 'action', width: 300,
+            render: (e, record) => {
+              console.log('record', record);
               return (
                 <div>
-                  <a onClick={() => props.toggleRecord(record)}>{record.Recording ? 'End' : 'Start'}</a>
+                  <a onClick={() => props.toggleRecord(record)}>{record.Recording ? 'Stop' : 'Start'}</a>
+                  <Divider type='vertical' />
+                  <a onClick={() => props.toggleRecord1(record)}>Stop</a>
                 </div>
+
               );
             },
           }
@@ -95,20 +101,26 @@ function CamView(props) {
         ]}
       />
 
-      
-      <h2 style={{ float: 'left' }}>Record Daily List ({props.recordsDaily.name})</h2>
 
+      <h2 style={{ float: 'left' }}>Record Daily List (Channel: {props.recordsDaily.name})</h2>
+      <h2>Source:
+      <Select onChange={value => props.onSelectedChannelChange(value)} value={props.selectedChannelDaily}>
+        {_.times(16, n =>
+          <Option value={n + 1}>{n + 1}</Option>)
+        }
+      </Select>
+      </h2>
       <Table
         dataSource={props.recordsDaily.list}
         columns={[
-          { title: 'Index', dataIndex: 'id', key: 'id', width: 200, render: (e, record, index) => (index + 1), align: 'center'  },
+          { title: 'Index', dataIndex: 'id', key: 'id', width: 200, render: (e, record, index) => (index + 1), align: 'center' },
           { title: 'startAt', dataIndex: 'startAt', key: 'startAt', width: 160 },
           { title: 'duration', dataIndex: 'duration', key: 'duration', width: 160 },
           { title: 'hls', dataIndex: 'hls', key: 'hls', width: 160 },
           { title: 'important', dataIndex: 'important', key: 'important', width: 160 }
         ]}
       />
-      
+
       {/* <VLCPlayer
            ref={ref => (this.vlcPlayer = ref)}
            style={[styles.video]}
@@ -142,10 +154,11 @@ let hoc = (WrappedComponent) => {
         title: 'Add user',
         endpoint: 'http://172.16.17.253:10800',
         serverInfo: [],
-        channels:[],
+        channels: [],
         stream: null,
         records: [],
-        recordsDaily:[]
+        recordsDaily: [],
+        selectedChannelDaily: 1
       };
     }
 
@@ -155,59 +168,72 @@ let hoc = (WrappedComponent) => {
       await this.getChannelsInfo();
       await this.getChannelStream(1);
       await this.getRecording();
-      await this.getRecordingByChannelDaily();
+      await this.getRecordingByChannelDaily(1);
     }
 
-    async getServerInfo(){
+    async getServerInfo() {
       let result = await axios.get(this.state.endpoint + '/api/v1/getserverinfo');
       // console.log('type',typeof(serverInfo));
       // console.log('result',serverInfo);
-      this.setState({serverInfo:result.data});
+      this.setState({ serverInfo: result.data });
     }
 
-    async getChannelsInfo(){
+    async getChannelsInfo() {
       let result = await axios.get(this.state.endpoint + '/api/v1/getchannels');
       // console.log('type',typeof(serverInfo));
       // console.log('result',serverInfo);
-      this.setState({channels:result.data.LiveQing.Body.Channels});
+      this.setState({ channels: result.data.LiveQing.Body.Channels });
     }
 
-    async getChannelStream(index){
+    async getChannelStream(index) {
       // _.map(index, i=>{
       //   let result = await axios.get(this.state.endpoint + '/api/v1/getchannelstream?channel='+i);
       //   return result.data.LiveQing.Body.URL;
       // });
       let result = await axios.get(this.state.endpoint + '/api/v1/getchannelstream?channel=1');
-      console.log('stream 1',result);
-      this.setState({stream:result.data.LiveQing.Body.URL});
+      console.log('stream 1', result);
+      this.setState({ stream: result.data.LiveQing.Body.URL });
     }
 
-    async toggleRecord(record){
-      console.log('toggle channel',record);
-      let result = await axios.get(this.state.endpoint + '/api/v1/' + record.Recording ? 'stop' : 'start' + 'record?channel='+record.Channel);
-      console.log('stream 1',result);
+    async toggleRecord(record) {
+      console.log('toggle channel', record);
+      let result = await axios.get(this.state.endpoint + '/api/v1/' + record.Recording ? 'stop' : 'start' + 'record?channel=' + record.Channel);
+      console.log('stream 1', result);
 
     }
 
-    async getRecording(){
+    async toggleRecord1(record) {
+      console.log('toggle channel', record);
+      let result = await axios.get(this.state.endpoint + '/api/v1/stoprecord?channel=' + record.Channel);
+      console.log('stream 1', result);
+
+    }
+
+    async getRecording() {
       let result = await axios.get(this.state.endpoint + '/api/v1/record/querydevices');
-      console.log('records',result);
-      this.setState({records:result.data.rows});
+      console.log('records', result);
+      this.setState({ records: result.data.rows });
 
     }
 
-    async getRecordingByChannel(channel){
+    async getRecordingByChannel(channel) {
       let result = await axios.get(this.state.endpoint + '/api/v1/record/queryflags?id=1');
-      console.log('records',result);
-      this.setState({records:result.data.rows});
+      console.log('records', result);
+      this.setState({ records: result.data.rows });
 
     }
 
-    async getRecordingByChannelDaily(channel){
-      let result = await axios.get(this.state.endpoint + '/api/v1/record/querydaily?id=1&period=20201202');
-      console.log('records',result);
-      this.setState({recordsDaily:result.data});
+    async getRecordingByChannelDaily(channel) {
+      let result = await axios.get(this.state.endpoint + '/api/v1/record/querydaily?id=' + channel + '&period=20201202');
+      console.log('records', result);
+      this.setState({ recordsDaily: result.data });
 
+    }
+
+    async onSelectedChannelChange(value) {
+      console.log('changeing to channel', value);
+      this.setState({ selectedChannelDaily: value });
+      await this.getRecordingByChannelDaily(value);
     }
 
     async fetchUsers() {
@@ -262,15 +288,18 @@ let hoc = (WrappedComponent) => {
         stream={this.state.stream}
         records={this.state.records}
         recordsDaily={this.state.recordsDaily}
+        selectedChannelDaily={this.state.selectedChannelDaily}
         cancel={() => this.cancel()}
         show={(user) => this.show(user)}
         edit={(user) => this.edit(user)}
         search={(value) => this.search(value)}
-        getServerInfo={()=>this.getServerInfo()}
-        getChannelsInfo={()=>this.getChannelsInfo()}
-        toggleRecord={(record)=>this.toggleRecord(record)}
-        getRecording={()=>this.getRecording()}
-        getRecordingByChanne={()=>this.getRecordingByChannel()}
+        getServerInfo={() => this.getServerInfo()}
+        getChannelsInfo={() => this.getChannelsInfo()}
+        toggleRecord={(record) => this.toggleRecord(record)}
+        toggleRecord1={(record) => this.toggleRecord1(record)}
+        getRecording={() => this.getRecording()}
+        getRecordingByChanne={() => this.getRecordingByChannel()}
+        onSelectedChannelChange={(value) => this.onSelectedChannelChange(value)}
 
       />;
     }
