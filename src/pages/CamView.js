@@ -68,7 +68,7 @@ function CamView(props) {
           { title: 'SourceVideoHeight', dataIndex: 'SourceVideoHeight', key: 'SourceVideoHeight', width: 160 },
           {
             title: 'Snapshot', dataIndex: 'SnapURL', key: 'SnapURL', width: 160,
-            render: (record) => <img src={props.endpoint + record} width="80px" height="80px" ></img>
+            render: record => <img src={props.endpoint + record} width="80px" height="80px" ></img>
           },
           {
             title: 'Recording', dataIndex: 'Recording', key: 'Recording', width: 160,
@@ -80,9 +80,9 @@ function CamView(props) {
               console.log('record', record);
               return (
                 <div>
-                  <a onClick={() => props.toggleRecord(record)}>{record.Recording ? 'Stop' : 'Start'}</a>
-                  <Divider type='vertical' />
-                  <a onClick={() => props.toggleRecord1(record)}>Stop</a>
+                  <a onClick={() => props.toggleRecordRealTime(record)}>{record.Recording ? 'Stop' : 'Start'}</a>
+                  {/* <Divider type='vertical' />
+                  <a onClick={() => props.toggleRecord1(record)}>Stop</a> */}
                 </div>
 
               );
@@ -116,7 +116,9 @@ function CamView(props) {
           { title: 'Index', dataIndex: 'id', key: 'id', width: 200, render: (e, record, index) => (index + 1), align: 'center' },
           { title: 'startAt', dataIndex: 'startAt', key: 'startAt', width: 160 },
           { title: 'duration', dataIndex: 'duration', key: 'duration', width: 160 },
-          { title: 'hls', dataIndex: 'hls', key: 'hls', width: 160 },
+          { title: 'hls', dataIndex: 'hls', key: 'hls', width: 160,
+            render: record => props.endpoint + record
+          },
           { title: 'important', dataIndex: 'important', key: 'important', width: 160 }
         ]}
       />
@@ -152,18 +154,25 @@ let hoc = (WrappedComponent) => {
         users: null,
         visible: false,
         title: 'Add user',
-        endpoint: 'http://172.16.17.253:10800',
+        // endpoint: 'http://172.16.17.253:10800',
+        endpoint: 'http://localhost:10800',
         serverInfo: [],
         channels: [],
         stream: null,
         records: [],
         recordsDaily: [],
-        selectedChannelDaily: 1
+        selectedChannelDaily: 1,
+        token: null
       };
     }
 
     async componentDidMount() {
       // await this.fetchUsers();
+      
+      let result = await axios.get(this.state.endpoint + '/api/v1/login?username=admin&password=21232f297a57a5a743894a0e4a801fc3');
+      console.log('auth res',result);
+      this.setState({ token: result.data.LiveQing.Body.Token});
+      console.log('now token',this.state.token);
       await this.getServerInfo();
       await this.getChannelsInfo();
       await this.getChannelStream(1);
@@ -197,16 +206,23 @@ let hoc = (WrappedComponent) => {
 
     async toggleRecord(record) {
       console.log('toggle channel', record);
-      let result = await axios.get(this.state.endpoint + '/api/v1/' + record.Recording ? 'stop' : 'start' + 'record?channel=' + record.Channel);
+      // let result = await axios.get(this.state.endpoint + '/api/v1/' + record.Recording ? 'stop' : 'start' + 'record?channel=' + record.Channel);
+      let result = await axios.get(this.state.endpoint + '/api/v1/startrecord?channel=' + record.Channel);
       console.log('stream 1', result);
-
     }
 
     async toggleRecord1(record) {
       console.log('toggle channel', record);
       let result = await axios.get(this.state.endpoint + '/api/v1/stoprecord?channel=' + record.Channel);
       console.log('stream 1', result);
+    }
 
+    async toggleRecordRealTime(record) {
+      console.log('toggle channel', record);
+      // let result = await axios.get(this.state.endpoint + '/api/v1/' + record.Recording ? 'stop' : 'start' + 'record?channel=' + record.Channel);
+      let result = await axios.get(this.state.endpoint + '/api/v1/realtime/record/' + record.Recording ? 'stop' : 'start' + '?channel=' + record.Channel + '&token=' + this.state.token);
+      console.log('stream 1', result);
+      await this.getChannelsInfo();
     }
 
     async getRecording() {
@@ -224,7 +240,7 @@ let hoc = (WrappedComponent) => {
     }
 
     async getRecordingByChannelDaily(channel) {
-      let result = await axios.get(this.state.endpoint + '/api/v1/record/querydaily?id=' + channel + '&period=20201202');
+      let result = await axios.get(this.state.endpoint + '/api/v1/record/querydaily?id=' + channel + '&period=20201209');
       console.log('records', result);
       this.setState({ recordsDaily: result.data });
 
@@ -278,6 +294,7 @@ let hoc = (WrappedComponent) => {
 
     render() {
       return <WrappedComponent
+        token={this.state.token}
         user={this.state.user}
         users={this.state.users}
         title={this.state.title}
@@ -297,6 +314,7 @@ let hoc = (WrappedComponent) => {
         getChannelsInfo={() => this.getChannelsInfo()}
         toggleRecord={(record) => this.toggleRecord(record)}
         toggleRecord1={(record) => this.toggleRecord1(record)}
+        toggleRecordRealTime={(record) => this.toggleRecordRealTime(record)}
         getRecording={() => this.getRecording()}
         getRecordingByChanne={() => this.getRecordingByChannel()}
         onSelectedChannelChange={(value) => this.onSelectedChannelChange(value)}
